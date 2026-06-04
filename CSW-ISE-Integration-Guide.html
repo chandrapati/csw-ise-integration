@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Cisco Secure Workload — ISE / pxGrid Integration Guide</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+       max-width: 900px; margin: 2rem auto; padding: 0 1.5rem;
+       color: #1a1a2e; line-height: 1.65; }
+h1 { font-size: 1.8rem; border-bottom: 2px solid #005073; padding-bottom: .5rem; }
+h2 { font-size: 1.3rem; margin-top: 2rem; color: #005073; }
+h3 { font-size: 1.1rem; color: #333; }
+code { background: #f4f4f4; padding: .15em .4em; border-radius: 3px; font-size: .9em; }
+pre { background: #f4f4f4; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .92em; }
+th { background: #005073; color: #fff; padding: .5rem .75rem; text-align: left; }
+td { padding: .45rem .75rem; border-bottom: 1px solid #e2e2e2; }
+tr:nth-child(even) td { background: #f9f9f9; }
+blockquote { border-left: 4px solid #005073; margin: 0; padding: .5rem 1rem;
+             background: #f0f7fb; color: #444; }
+a { color: #0066cc; }
+
+</style>
+</head>
+<body>
+<h1 id="cisco-secure-workload-ise-pxgrid-integration-guide">Cisco Secure
+Workload — ISE / pxGrid Integration Guide</h1>
+<blockquote>
+<p><strong>Disclaimer:</strong> This is a community reference guide
+prepared by Cisco Solutions Engineering.<br />
+It is provided as-is for educational and planning purposes.<br />
+Always refer to <a href="https://www.cisco.com/c/en/us/products/security/tetration/index.html">official
+Cisco Secure Workload documentation</a><br />
+and <a href="https://www.cisco.com/c/en/us/support/security/identity-services-engine/series.html">Cisco
+ISE documentation</a> for authoritative, release-specific guidance.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-overview">Overview</a></li>
+<li><a href="#2-architecture">Architecture</a></li>
+<li><a href="#3-what-csw-gets-from-ise">What CSW Gets from ISE</a></li>
+<li><a href="#4-use-cases">Use Cases</a></li>
+<li><a href="#5-prerequisites">Prerequisites</a></li>
+<li><a href="#6-step-a--ise-pxgrid-configuration">Step A — ISE pxGrid
+Configuration</a></li>
+<li><a href="#7-step-b--generate-the-pxgrid-client-certificate">Step B —
+Generate the pxGrid Client Certificate</a></li>
+<li><a href="#8-step-c--configure-the-ise-connector-on-csw">Step C —
+Configure the ISE Connector on CSW</a></li>
+<li><a href="#9-optional-ldap-integration-for-user-labels">Optional:
+LDAP Integration for User Labels</a></li>
+<li><a href="#10-how-csw-uses-the-ise-data">How CSW Uses the ISE
+Data</a></li>
+<li><a href="#11-policy-examples">Policy Examples</a></li>
+<li><a href="#12-verification">Verification</a></li>
+<li><a href="#13-periodic-tasks-and-data-refresh">Periodic Tasks and
+Data Refresh</a></li>
+<li><a href="#14-limits">Limits</a></li>
+<li><a href="#15-troubleshooting">Troubleshooting</a></li>
+<li><a href="#16-related-resources">Related Resources</a></li>
+</ol>
+<hr />
+<h2 id="overview">1. Overview</h2>
+<p>The <strong>ISE connector</strong> in Cisco Secure Workload (CSW)
+integrates with <strong>Cisco Identity Services Engine (ISE)</strong>
+and <strong>ISE Passive Identity Connector (ISE-PIC)</strong> using
+<strong>Cisco Platform Exchange Grid (pxGrid 2.0)</strong> to retrieve
+contextual information about endpoints.</p>
+<p>This integration brings <strong>user identity, device posture, and
+Security Group Tag (SGT)</strong> context into CSW workload policy —
+enabling true <strong>user-aware microsegmentation</strong> for Zero
+Trust architectures.</p>
+<h3 id="what-this-integration-enables">What this integration
+enables</h3>
+<table>
+<colgroup>
+<col style="width: 52%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr>
+<th>Before ISE Integration</th>
+<th>After ISE Integration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Policies based on IP addresses only</td>
+<td>Policies based on <strong>user identity</strong>, <strong>AD
+group</strong>, <strong>device type</strong>,
+<strong>posture</strong></td>
+</tr>
+<tr>
+<td>Static scope membership</td>
+<td><strong>Dynamic scope membership</strong> driven by real-time ISE
+endpoint data</td>
+</tr>
+<tr>
+<td>Network-layer segmentation</td>
+<td><strong>Identity-aware segmentation</strong> — allow/deny based on
+who the user is</td>
+</tr>
+<tr>
+<td>No visibility into VPN/remote users</td>
+<td><strong>Remote endpoint context</strong> from ISE for VPN-connected
+workstations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ise-versions-supported">ISE versions supported</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Minimum Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco ISE</td>
+<td>2.4</td>
+</tr>
+<tr>
+<td>ISE Passive Identity Connector (ISE-PIC)</td>
+<td>3.1</td>
+</tr>
+<tr>
+<td>Cisco Secure Workload</td>
+<td>3.7 (SAN cert required from 3.7+)</td>
+</tr>
+<tr>
+<td>pxGrid</td>
+<td><strong>2.0 only</strong> (pxGrid 1.0 / XMPP is end-of-life)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture">2. Architecture</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Enterprise Data Center / Cloud                │
+│                                                                  │
+│  ┌──────────────┐    pxGrid 2.0     ┌─────────────────────────┐ │
+│  │  Cisco ISE   │◄──────────────────│  CSW Edge Appliance     │ │
+│  │              │   (WebSocket/     │  (ISE Connector)        │ │
+│  │  • Sessions  │    REST/TLS)      │                         │ │
+│  │  • SGTs      │                   │  • Registers endpoints  │ │
+│  │  • Posture   │                   │  • Pulls SGT labels     │ │
+│  │  • AD Groups │                   │  • Streams session events│ │
+│  └──────┬───────┘                   └──────────┬──────────────┘ │
+│         │                                      │                 │
+│  ┌──────▼─────────────────────────────────────▼──────────────┐  │
+│  │              Cisco Secure Workload (SaaS / On-Prem)        │  │
+│  │                                                            │  │
+│  │  Inventory Enrichment:                                     │  │
+│  │    workload_ip → user, AD group, SGT, device_type, posture │  │
+│  │                                                            │  │
+│  │  Scope / Policy Engine:                                    │  │
+│  │    Scope: &quot;Finance Users&quot; = ISE attribute SGT == Finance   │  │
+│  │    Policy: Finance Users → App servers: allow TCP 8443     │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="component-roles">Component roles</h3>
+<table>
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ISE</strong></td>
+<td>Source of user sessions, endpoint metadata, SGT assignments, posture
+results</td>
+</tr>
+<tr>
+<td><strong>pxGrid 2.0</strong></td>
+<td>Secure bi-directional pub/sub channel between ISE and third-party
+systems</td>
+</tr>
+<tr>
+<td><strong>CSW Edge Appliance</strong></td>
+<td>Hosts the ISE connector process; manages pxGrid subscription</td>
+</tr>
+<tr>
+<td><strong>CSW Ingest Appliance</strong></td>
+<td>(Not used for ISE; used for flow connectors)</td>
+</tr>
+<tr>
+<td><strong>CSW Cluster</strong></td>
+<td>Stores enriched inventory labels; evaluates policy against labeled
+workloads</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-csw-gets-from-ise">3. What CSW Gets from ISE</h2>
+<p>The ISE connector subscribes to two pxGrid topics:</p>
+<h3 id="session-endpoint-records">3.1 Session / Endpoint records</h3>
+<p>Each authenticated endpoint record provides:</p>
+<table>
+<thead>
+<tr>
+<th>ISE Attribute</th>
+<th>CSW Label Key</th>
+<th>Example Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IP Address</td>
+<td>(primary key — maps to workload)</td>
+<td><code>10.20.30.41</code></td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code>user/username</code></td>
+<td><code>jsmith</code></td>
+</tr>
+<tr>
+<td>AD Domain</td>
+<td><code>user/domain</code></td>
+<td><code>corp.example.com</code></td>
+</tr>
+<tr>
+<td>AD Group</td>
+<td><code>user/ad_group</code></td>
+<td><code>Finance-Analysts</code></td>
+</tr>
+<tr>
+<td>Device Type</td>
+<td><code>device/type</code></td>
+<td><code>Windows-10-Workstation</code></td>
+</tr>
+<tr>
+<td>Endpoint Profile</td>
+<td><code>device/profile</code></td>
+<td><code>Microsoft-Workstation</code></td>
+</tr>
+<tr>
+<td>MDM Compliance</td>
+<td><code>device/mdm_compliance</code></td>
+<td><code>Compliant</code></td>
+</tr>
+<tr>
+<td>Security Group Tag (SGT)</td>
+<td><code>user/sgt</code></td>
+<td><code>Finance</code></td>
+</tr>
+<tr>
+<td>VLAN</td>
+<td><code>network/vlan</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td>NAS-IP</td>
+<td><code>network/nas_ip</code></td>
+<td><code>10.0.0.1</code></td>
+</tr>
+<tr>
+<td>Auth Method</td>
+<td><code>user/auth_method</code></td>
+<td><code>802.1X</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-group-sgt-records">3.2 Security Group (SGT)
+records</h3>
+<p>The connector also subscribes to SGT updates, maintaining a local
+mapping of SGT numeric value → human-readable name. This is used to
+translate the raw SGT integer in endpoint records to a friendly label
+(e.g., <code>SGT 10 → &quot;Finance&quot;</code>).</p>
+<hr />
+<h2 id="use-cases">4. Use Cases</h2>
+<h3 id="use-case-1-identity-aware-microsegmentation">Use Case 1 —
+Identity-Aware Microsegmentation</h3>
+<p><strong>Scenario:</strong> Allow only users in the
+<strong>Finance-Analysts</strong> AD group to reach financial database
+servers on TCP 1521.</p>
+<p><strong>Without ISE:</strong> Requires a static list of source IP
+addresses — breaks when users move or use VPN.</p>
+<p><strong>With ISE:</strong> 1. ISE labels every Finance-Analyst
+endpoint with <code>user/ad_group = Finance-Analysts</code> 2. CSW scope
+<code>Finance-Analysts-Endpoints</code> =
+<code>{ user/ad_group == &#39;Finance-Analysts&#39; }</code> 3. CSW policy:
+<code>Finance-Analysts-Endpoints → FinDB-Cluster: ALLOW TCP 1521</code>
+4. Policy is <strong>dynamic</strong> — follows the user regardless of
+IP</p>
+<hr />
+<h3 id="use-case-2-posture-based-access">Use Case 2 — Posture-Based
+Access</h3>
+<p><strong>Scenario:</strong> Block non-compliant endpoints from
+accessing production application servers.</p>
+<p><strong>With ISE:</strong> 1. ISE marks non-compliant devices:
+<code>device/mdm_compliance = Non-Compliant</code> 2. CSW scope
+<code>Non-Compliant-Endpoints</code> =
+<code>{ device/mdm_compliance == &#39;Non-Compliant&#39; }</code> 3. CSW policy:
+<code>Non-Compliant-Endpoints → ProdApp-Servers: DENY ALL</code></p>
+<hr />
+<h3 id="use-case-3-sgt-based-policy-trustsec">Use Case 3 — SGT-Based
+Policy (TrustSec)</h3>
+<p><strong>Scenario:</strong> Leverage existing TrustSec SGT assignments
+in CSW policy.</p>
+<p><strong>With ISE:</strong> 1. ISE provides SGT assignment for every
+authenticated endpoint 2. CSW labels endpoints with
+<code>user/sgt = Finance</code> 3. CSW policy references SGT labels
+directly — no IP re-engineering required</p>
+<hr />
+<h3 id="use-case-4-lateral-movement-detection-by-user">Use Case 4 —
+Lateral Movement Detection by User</h3>
+<p><strong>Scenario:</strong> Alert when a Finance user is connecting to
+servers outside the Finance scope.</p>
+<p><strong>With ISE:</strong> 1. CSW scope
+<code>Finance-Endpoints</code> = <code>{ user/sgt == &#39;Finance&#39; }</code>
+2. CSW Traffic Alert Rule:
+<code>Finance-Endpoints → non-Finance-Servers: ALERT (MEDIUM)</code> 3.
+Forwarded via Syslog to Splunk — full user identity context in alert
+payload</p>
+<hr />
+<h2 id="prerequisites">5. Prerequisites</h2>
+<h3 id="ise-side">ISE side</h3>
+<ul class="task-list">
+<li><label><input type="checkbox"></input>ISE 2.4+ (or ISE-PIC 3.1+) deployed
+and reachable from CSW Edge appliance network</label></li>
+<li><label><input type="checkbox"></input>pxGrid service
+<strong>enabled</strong> on at least one ISE node</label></li>
+<li><label><input type="checkbox"></input>ISE pxGrid node SSL certificate
+includes <strong>Subject Alternative Names (SAN)</strong> (required CSW
+3.7+)</label></li>
+<li><label><input type="checkbox"></input>Certificate Authority (CA)
+accessible to sign the pxGrid client certificate</label></li>
+<li><label><input type="checkbox"></input>Network connectivity: CSW Edge
+appliance → ISE pxGrid node on <strong>TCP 8910</strong> (pxGrid
+2.0)</label></li>
+</ul>
+<h3 id="csw-side">CSW side</h3>
+<ul class="task-list">
+<li><label><input type="checkbox"></input><strong>CSW Edge appliance</strong>
+deployed (ISE connector runs on Edge; <strong>not</strong>
+Ingest)</label></li>
+<li><label><input type="checkbox"></input>Edge appliance registered and
+visible in CSW UI under <strong>Manage &gt; Virtual
+Appliances</strong></label></li>
+<li><label><input type="checkbox"></input>Sufficient Edge capacity (1 ISE
+connector per Edge appliance, 1 per tenant)</label></li>
+<li><label><input type="checkbox"></input>VRF configuration for the Edge
+appliance matches the subnet of ISE-managed endpoints</label></li>
+</ul>
+<h3 id="certificates-required">Certificates required</h3>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 24%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>Certificate</th>
+<th>Purpose</th>
+<th>Who generates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISE pxGrid Server CA cert</td>
+<td>Trust anchor for ISE server identity</td>
+<td>ISE admin — export from ISE</td>
+</tr>
+<tr>
+<td>pxGrid Client cert + key</td>
+<td>CSW connector authenticates to ISE</td>
+<td>You generate (OpenSSL CSR → CA signs)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="step-a-ise-pxgrid-configuration">6. Step A — ISE pxGrid
+Configuration</h2>
+<h3 id="a1-enable-pxgrid-service-on-ise">A1 — Enable pxGrid service on
+ISE</h3>
+<ol type="1">
+<li>In ISE, navigate to <strong>Administration &gt; System &gt;
+Deployment</strong></li>
+<li>Select the ISE node that will serve pxGrid</li>
+<li>Under <strong>General Settings</strong>, check the box for
+<strong>pxGrid</strong></li>
+<li>Click <strong>Save</strong></li>
+</ol>
+<blockquote>
+<p>If you have multiple ISE nodes, enable pxGrid on the nodes that will
+handle the integration. For HA, enable on both primary and secondary
+pxGrid nodes.</p>
+</blockquote>
+<h3 id="a2-verify-pxgrid-node-certificate-has-sans-csw-3.7-requirement">A2 —
+Verify pxGrid node certificate has SANs (CSW 3.7+ requirement)</h3>
+<ol type="1">
+<li>Navigate to <strong>Administration &gt; System &gt; Certificates
+&gt; Certificate Management &gt; System Certificates</strong></li>
+<li>Find the certificate with <strong>Used by: pxGrid</strong></li>
+<li>Click <strong>View</strong></li>
+<li>Scroll to the <strong>Extensions</strong> section and confirm
+<strong>Subject Alternative Names (SAN)</strong> are present</li>
+<li>The SAN should include the FQDN and/or IP of the pxGrid node</li>
+</ol>
+<blockquote>
+<p><strong>Important:</strong> If SAN is missing, have your ISE admin
+regenerate the pxGrid certificate with proper SAN values before
+proceeding. CSW 3.7+ will reject certificates without SAN.</p>
+</blockquote>
+<h3 id="a3-configure-pxgrid-client-registration-mode">A3 — Configure
+pxGrid client registration mode</h3>
+<ol type="1">
+<li>Navigate to <strong>Administration &gt; pxGrid Services &gt;
+Settings</strong></li>
+<li>Choose one of:
+<ul>
+<li><strong>Automatically approve new accounts</strong> (lab/POV —
+simpler)</li>
+<li><strong>Manually approve new accounts</strong> (production — more
+secure)</li>
+</ul></li>
+<li>Click <strong>Save</strong></li>
+</ol>
+<blockquote>
+<p>If using manual approval, you will need to approve the CSW
+connector’s pxGrid account after the connector is configured in Step
+C.</p>
+</blockquote>
+<hr />
+<h2 id="step-b-generate-the-pxgrid-client-certificate">7. Step B —
+Generate the pxGrid Client Certificate</h2>
+<p>The CSW ISE connector authenticates to ISE using a <strong>client
+certificate</strong>. This certificate must be signed by the same CA
+that signed the ISE pxGrid server certificate.</p>
+<h3 id="b1-create-the-openssl-csr-configuration">B1 — Create the OpenSSL
+CSR configuration</h3>
+<p>On any Linux/macOS host with OpenSSL installed, create a file named
+<code>csw-ise-connector.cfg</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[req]</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">distinguished_name </span><span class="ot">=</span><span class="st"> req_distinguished_name</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">req_extensions </span><span class="ot">=</span><span class="st"> v3_req</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="dt">x509_extensions </span><span class="ot">=</span><span class="st"> v3_req</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">prompt </span><span class="ot">=</span><span class="st"> </span><span class="kw">no</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">[req_distinguished_name]</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="dt">C  </span><span class="ot">=</span><span class="st"> US</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="dt">ST </span><span class="ot">=</span><span class="st"> California</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="dt">L  </span><span class="ot">=</span><span class="st"> San Jose</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dt">O  </span><span class="ot">=</span><span class="st"> YourOrganization</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="dt">OU </span><span class="ot">=</span><span class="st"> NetworkSecurity</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="dt">CN </span><span class="ot">=</span><span class="st"> csw-ise-connector.corp.example.com</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">[v3_req]</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="dt">subjectKeyIdentifier </span><span class="ot">=</span><span class="st"> hash</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="dt">basicConstraints     </span><span class="ot">=</span><span class="st"> critical,CA:false</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="dt">subjectAltName       </span><span class="ot">=</span><span class="st"> @alt_names</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dt">keyUsage             </span><span class="ot">=</span><span class="st"> critical,digitalSignature,keyEncipherment</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="dt">extendedKeyUsage     </span><span class="ot">=</span><span class="st"> serverAuth,clientAuth</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="kw">[alt_names]</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="dt">IP.1  </span><span class="ot">=</span><span class="st"> 10.x.x.x</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="dt">DNS.1 </span><span class="ot">=</span><span class="st"> csw-ise-connector.corp.example.com</span></span></code></pre></div>
+<blockquote>
+<p>Replace <code>10.x.x.x</code> with the IP of your CSW Edge appliance
+and update the DNS name and organization fields accordingly.</p>
+</blockquote>
+<h3 id="b2-generate-the-csr-and-private-key">B2 — Generate the CSR and
+private key</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> req <span class="at">-newkey</span> rsa:2048 <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-keyout</span> csw-ise-connector.key <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-nodes</span> <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-out</span> csw-ise-connector.csr <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-config</span> csw-ise-connector.cfg</span></code></pre></div>
+<p>This produces: - <code>csw-ise-connector.csr</code> — submit this to
+your CA for signing - <code>csw-ise-connector.key</code> —
+<strong>private key — protect this file</strong></p>
+<h3 id="b3-sign-the-csr-with-your-ca">B3 — Sign the CSR with your
+CA</h3>
+<p><strong>Option A — Windows CA (recommended for enterprise
+environments):</strong></p>
+<pre class="batch"><code>certreq -submit -binary -attrib &quot;CertificateTemplate:CiscoIdentityServicesEngine&quot; ^
+  csw-ise-connector.csr csw-ise-connector.cer</code></pre>
+<blockquote>
+<p>The Windows CA Certificate Template must have the following
+extensions: - <strong>Key Usage:</strong> Digital Signature, Key
+Encipherment - <strong>Extended Key Usage:</strong> Server
+Authentication, Client Authentication</p>
+</blockquote>
+<p><strong>Option B — OpenSSL self-managed CA:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> x509 <span class="at">-req</span> <span class="at">-days</span> 730 <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-in</span> csw-ise-connector.csr <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-CA</span> root-ca.pem <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-CAkey</span> root-ca.key <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-CAcreateserial</span> <span class="dt">\</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-extfile</span> csw-ise-connector.cfg <span class="dt">\</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-extensions</span> v3_req <span class="dt">\</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">-out</span> csw-ise-connector.pem</span></code></pre></div>
+<h3 id="b4-convert-signed-certificate-to-pem-format-if-needed">B4 —
+Convert signed certificate to PEM format (if needed)</h3>
+<p>If your CA returned a <code>.cer</code> (DER binary) file:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> x509 <span class="at">-inform</span> der <span class="at">-in</span> csw-ise-connector.cer <span class="at">-out</span> csw-ise-connector.pem</span></code></pre></div>
+<h3 id="b5-verify-the-certificate">B5 — Verify the certificate</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> verify <span class="at">-CAfile</span> root-ca.pem csw-ise-connector.pem</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Expected output: csw-ise-connector.pem: OK</span></span></code></pre></div>
+<h3 id="b6-export-ise-root-ca-certificate">B6 — Export ISE root CA
+certificate</h3>
+<p>In ISE, navigate to <strong>Administration &gt; System &gt;
+Certificates &gt; Trusted Certificates</strong>.<br />
+Export the root CA certificate used to sign the ISE pxGrid node
+certificate in <strong>PEM format</strong>.<br />
+Save as <code>ise-root-ca.pem</code>.</p>
+<hr />
+<h2 id="step-c-configure-the-ise-connector-on-csw">8. Step C — Configure
+the ISE Connector on CSW</h2>
+<h3 id="c1-navigate-to-connector-configuration">C1 — Navigate to
+connector configuration</h3>
+<ol type="1">
+<li>In the CSW UI, navigate to <strong>Manage &gt; Virtual
+Appliances</strong></li>
+<li>Select your <strong>Edge appliance</strong></li>
+<li>Click the <strong>Connectors</strong> tab</li>
+<li>Click <strong>+ Add Connector</strong> and select
+<strong>ISE</strong></li>
+</ol>
+<h3 id="c2-basic-connector-settings">C2 — Basic connector settings</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Connector Name</strong></td>
+<td>e.g., <code>ise-connector-prod</code></td>
+</tr>
+<tr>
+<td><strong>Connector Type</strong></td>
+<td>ISE</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c3-ise-instance-configuration">C3 — ISE Instance
+Configuration</h3>
+<p>Click <strong>+ Add ISE Instance</strong> and fill in:</p>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>Friendly name for this ISE node</td>
+<td><code>ISE-Primary</code></td>
+</tr>
+<tr>
+<td><strong>ISE Hostname</strong></td>
+<td>FQDN of the pxGrid node (<strong>not IP — use FQDN if SAN has DNS
+entry</strong>)</td>
+<td><code>ise01.corp.example.com</code></td>
+</tr>
+<tr>
+<td><strong>ISE Node Name</strong></td>
+<td>pxGrid node name (typically matches hostname)</td>
+<td><code>ise01.corp.example.com</code></td>
+</tr>
+<tr>
+<td><strong>ISE Client Certificate</strong></td>
+<td>Paste contents of <code>csw-ise-connector.pem</code></td>
+<td>(PEM text)</td>
+</tr>
+<tr>
+<td><strong>ISE Client Key</strong></td>
+<td>Paste contents of <code>csw-ise-connector.key</code> — <strong>must
+be unencrypted (no passphrase)</strong></td>
+<td>(PEM text)</td>
+</tr>
+<tr>
+<td><strong>ISE Server CA Certificate</strong></td>
+<td>Paste contents of <code>ise-root-ca.pem</code></td>
+<td>(PEM text)</td>
+</tr>
+<tr>
+<td><strong>ISE IPv4 Subnet Filter</strong> <em>(optional)</em></td>
+<td>Limit ingestion to specific subnets (CIDR)</td>
+<td><code>10.0.0.0/8</code></td>
+</tr>
+<tr>
+<td><strong>ISE IPv6 Subnet Filter</strong> <em>(optional)</em></td>
+<td>IPv6 subnet filter</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Ignore ISE Attributes</strong> <em>(optional)</em></td>
+<td>Attributes to exclude from CSW labels</td>
+<td>(select if needed)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Multi-node ISE HA:</strong> Add a second ISE instance entry
+pointing to the secondary pxGrid node.<br />
+All pxGrid nodes must trust the same CA that signed the CSW client
+certificate.</p>
+</blockquote>
+<blockquote>
+<p><strong>Using IP instead of FQDN:</strong> If you must use an IP
+address for ISE Hostname, the ISE CA certificate’s SAN must include that
+IP address. Otherwise connection failures will occur.</p>
+</blockquote>
+<h3 id="c4-apply-and-approve-if-manual-approval-mode">C4 — Apply and
+approve (if manual approval mode)</h3>
+<ol type="1">
+<li>Click <strong>Test and Apply</strong> in the CSW connector UI</li>
+<li>If ISE is configured for <strong>manual approval</strong>:
+<ul>
+<li>Log into ISE and navigate to <strong>Administration &gt; pxGrid
+Services &gt; All Clients</strong></li>
+<li>Find the CSW connector entry (will show as pending)</li>
+<li>Click <strong>Approve</strong></li>
+</ul></li>
+<li>Return to CSW and confirm the connector shows
+<strong>Connected</strong> status</li>
+</ol>
+<hr />
+<h2 id="optional-ldap-integration-for-user-labels">9. Optional: LDAP
+Integration for User Labels</h2>
+<p>The ISE connector can optionally connect to an LDAP/Active Directory
+server to enrich ISE endpoint records with additional user attributes
+(e.g., department, manager, title).</p>
+<h3 id="ldap-configuration-fields">LDAP Configuration fields</h3>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LDAP Server Hostname</td>
+<td>FQDN of your AD / LDAP server</td>
+</tr>
+<tr>
+<td>LDAP Port</td>
+<td>636 (LDAPS) or 389 (LDAP) — use 636 for production</td>
+</tr>
+<tr>
+<td>LDAP Bind Username</td>
+<td>Service account DN for read access</td>
+</tr>
+<tr>
+<td>LDAP Bind Password</td>
+<td>Service account password (encrypted in CSW)</td>
+</tr>
+<tr>
+<td>Username Attribute</td>
+<td>LDAP attribute that maps to ISE username (e.g.,
+<code>sAMAccountName</code>)</td>
+</tr>
+<tr>
+<td>Additional Attributes</td>
+<td>Up to 6 additional attributes to fetch per user (e.g.,
+<code>department</code>, <code>title</code>, <code>manager</code>)</td>
+</tr>
+<tr>
+<td>LDAP Certificate</td>
+<td>(Optional) CA cert for LDAPS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ldap-refresh">LDAP refresh</h3>
+<ul>
+<li>CSW creates a local LDAP snapshot on connector start</li>
+<li>Snapshot refreshes every <strong>24 hours</strong>
+(configurable)</li>
+<li>User labels are updated in CSW every <strong>2 minutes</strong>
+based on the local LDAP snapshot + ISE session data</li>
+</ul>
+<hr />
+<h2 id="how-csw-uses-the-ise-data">10. How CSW Uses the ISE Data</h2>
+<h3 id="inventory-enrichment">Inventory enrichment</h3>
+<p>Once configured, ISE endpoint data flows into CSW as <strong>user
+labels</strong> on workload IP addresses:</p>
+<pre><code>IP: 10.20.30.41
+  user/username     = jsmith
+  user/ad_group     = Finance-Analysts
+  user/sgt          = Finance
+  device/type       = Windows-10-Workstation
+  device/profile    = Microsoft-Workstation
+  device/mdm_compliance = Compliant
+  network/vlan      = 100</code></pre>
+<p>These labels are visible in <strong>Inventory &gt; Workloads</strong>
+— search for any endpoint IP and see the enriched ISE attributes.</p>
+<h3 id="vrf-association">VRF association</h3>
+<p>ISE endpoints are associated with a specific VRF based on the
+<strong>Agent Remote VRF Configuration</strong> on the CSW Edge
+appliance.</p>
+<p>To configure:<br />
+<strong>Manage &gt; Workloads &gt; Agents &gt; Configuration tab &gt;
+Agent Remote VRF Configurations &gt; Create Config</strong></p>
+<p>Provide: - VRF name - IP subnet range (CIDR) for endpoints registered
+by this ISE connector - Port range for ISE endpoint registration</p>
+<h3 id="scope-definition-with-ise-labels">Scope definition with ISE
+labels</h3>
+<p>Navigate to <strong>Manage &gt; Scopes</strong> and create a scope
+using ISE-derived labels:</p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr>
+<th>Scope Name</th>
+<th>Filter Expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Finance-Endpoints</code></td>
+<td><code>user/sgt = Finance</code></td>
+</tr>
+<tr>
+<td><code>Compliant-Devices</code></td>
+<td><code>device/mdm_compliance = Compliant</code></td>
+</tr>
+<tr>
+<td><code>Finance-Analysts</code></td>
+<td><code>user/ad_group = Finance-Analysts</code></td>
+</tr>
+<tr>
+<td><code>Non-Compliant-Guests</code></td>
+<td><code>device/profile = Guest AND device/mdm_compliance = Non-Compliant</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="policy-examples">11. Policy Examples</h2>
+<h3 id="allow-finance-users-to-access-finance-db-only">Allow Finance
+users to access Finance DB only</h3>
+<pre><code>Consumer:  Finance-Analysts (scope: user/ad_group = Finance-Analysts)
+Provider:  Finance-DB-Cluster (scope: orchestrator label app = financedb)
+Action:    ALLOW TCP 1521, TCP 5432</code></pre>
+<h3 id="block-non-compliant-devices-from-production">Block non-compliant
+devices from production</h3>
+<pre><code>Consumer:  Non-Compliant-Endpoints (scope: device/mdm_compliance = Non-Compliant)
+Provider:  Production-App-Servers (scope: environment = production)
+Action:    DENY ALL</code></pre>
+<h3 id="lateral-movement-alert-finance-user-on-unexpected-server">Lateral
+movement alert — Finance user on unexpected server</h3>
+<pre><code>Alert Rule (Traffic):
+  Source scope:      Finance-Endpoints
+  Destination scope: NOT (Finance-App-Servers OR Finance-DB-Cluster)
+  Protocol:          TCP
+  Severity:          MEDIUM
+  Notify:            Syslog → Splunk</code></pre>
+<h3 id="vpn-remote-access-validation">VPN remote access validation</h3>
+<pre><code>Consumer:  VPN-Remote-Users (scope: user/auth_method = VPN)
+Provider:  Internal-Workloads
+Action:    ALLOW only to explicitly defined application scopes
+           DENY all other destinations</code></pre>
+<hr />
+<h2 id="verification">12. Verification</h2>
+<h3 id="verify-connector-is-connected">12.1 Verify connector is
+connected</h3>
+<p>In CSW UI: <strong>Manage &gt; Virtual Appliances &gt; [Edge
+Appliance] &gt; Connectors</strong><br />
+ISE connector should show <strong>Status: Connected</strong></p>
+<h3 id="verify-endpoints-are-appearing-in-inventory">12.2 Verify
+endpoints are appearing in inventory</h3>
+<ol type="1">
+<li>Navigate to <strong>Inventory &gt; Workloads</strong></li>
+<li>Search for a known ISE-managed endpoint IP</li>
+<li>Confirm user/device labels are populated</li>
+</ol>
+<h3 id="verify-pxgrid-subscription-in-ise">12.3 Verify pxGrid
+subscription in ISE</h3>
+<ol type="1">
+<li>In ISE: <strong>Administration &gt; pxGrid Services &gt; Live
+Logs</strong></li>
+<li>Confirm CSW connector is listed as an active subscriber to the
+<strong>session</strong> and <strong>sg</strong> topics</li>
+</ol>
+<h3 id="check-connector-logs-on-edge-appliance">12.4 Check connector
+logs on Edge appliance</h3>
+<p>SSH to the Edge appliance and check:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> /usr/local/tet/log/ise-connector.log</span></code></pre></div>
+<p>Look for: - <code>Connected to ISE pxGrid node</code> — successful
+connection - <code>Fetched N endpoints from ISE snapshot</code> —
+initial data pull - <code>Received session update for IP X.X.X.X</code>
+— live updates flowing</p>
+<h3 id="verify-sgt-labels-in-csw-inventory">12.5 Verify SGT labels in
+CSW inventory</h3>
+<ol type="1">
+<li>In CSW <strong>Inventory</strong>, filter by
+<code>user/sgt = Finance</code></li>
+<li>Confirm expected endpoints appear</li>
+<li>Cross-reference with ISE <strong>Operations &gt; RADIUS &gt; Live
+Logs</strong> to confirm session is active</li>
+</ol>
+<hr />
+<h2 id="periodic-tasks-and-data-refresh">13. Periodic Tasks and Data
+Refresh</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 36%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th>Task</th>
+<th>Frequency</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Endpoint snapshot</td>
+<td>Every <strong>20 hours</strong></td>
+<td>Full pull of all active ISE sessions</td>
+</tr>
+<tr>
+<td>User label update</td>
+<td>Every <strong>2 minutes</strong></td>
+<td>Pushes LDAP + ISE endpoint label changes to CSW</td>
+</tr>
+<tr>
+<td>SGT database refresh</td>
+<td>On pxGrid event</td>
+<td>Real-time SGT name → value map update</td>
+</tr>
+<tr>
+<td>LDAP snapshot</td>
+<td>Every <strong>24 hours</strong> (configurable)</td>
+<td>Refresh local user attribute cache from AD</td>
+</tr>
+<tr>
+<td>pxGrid live subscription</td>
+<td>Continuous</td>
+<td>Real-time session start/end events streamed from ISE</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> After a Cisco ISE upgrade, the ISE connector
+must be <strong>reconfigured</strong> with new certificates generated by
+the upgraded ISE node.</p>
+</blockquote>
+<hr />
+<h2 id="limits">14. Limits</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISE instances per ISE connector</td>
+<td>20</td>
+</tr>
+<tr>
+<td>ISE connectors per CSW Edge appliance</td>
+<td>1</td>
+</tr>
+<tr>
+<td>ISE connectors per CSW tenant</td>
+<td>1</td>
+</tr>
+<tr>
+<td>ISE connectors per CSW cluster</td>
+<td>150</td>
+</tr>
+<tr>
+<td>Maximum ISE endpoints per connector</td>
+<td>400,000</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>One ISE connector per tenant means: design your subnet filter and VRF
+assignments carefully if you have multiple ISE deployments or a large
+environment split across VRFs.</p>
+</blockquote>
+<hr />
+<h2 id="troubleshooting">15. Troubleshooting</h2>
+<h3 id="connector-shows-disconnected-or-fails-to-connect">Connector
+shows “Disconnected” or fails to connect</h3>
+<table>
+<colgroup>
+<col style="width: 56%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSL handshake failure</td>
+<td>Verify client cert SAN matches the CN in the config; confirm ISE CA
+cert is the correct root that signed the pxGrid server cert</td>
+</tr>
+<tr>
+<td>Certificate missing SAN</td>
+<td>CSW 3.7+ requires SAN on ISE pxGrid node cert — regenerate ISE cert
+with SAN</td>
+</tr>
+<tr>
+<td>“Connection refused”</td>
+<td>Confirm TCP 8910 is open from Edge appliance to ISE pxGrid node;
+check ISE firewall rules</td>
+</tr>
+<tr>
+<td>“Pending approval” in ISE</td>
+<td>Go to ISE <strong>pxGrid Services &gt; All Clients</strong> and
+approve the CSW connector</td>
+</tr>
+<tr>
+<td>Password-protected key</td>
+<td>Strip the passphrase:
+<code>openssl rsa -in csw-ise-connector.key -out csw-ise-connector-clear.key</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="endpoints-not-appearing-in-csw-inventory">Endpoints not
+appearing in CSW inventory</h3>
+<table>
+<colgroup>
+<col style="width: 56%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No endpoints in inventory</td>
+<td>Confirm VRF configuration on Edge appliance covers the endpoint
+subnet</td>
+</tr>
+<tr>
+<td>Wrong VRF</td>
+<td>Verify <strong>Agent Remote VRF Configurations</strong> — subnet
+must match ISE endpoint IP range</td>
+</tr>
+<tr>
+<td>Endpoints present but no labels</td>
+<td>Confirm ISE is actively authenticating endpoints (check ISE
+<strong>Live Logs</strong>); endpoints must have an active session</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ise-attribute-fields-missing">ISE attribute fields missing</h3>
+<table>
+<colgroup>
+<col style="width: 56%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user/sgt</code> missing</td>
+<td>Confirm TrustSec / SGT is enabled on ISE and endpoints are assigned
+SGTs</td>
+</tr>
+<tr>
+<td><code>device/mdm_compliance</code> missing</td>
+<td>Requires MDM integration configured in ISE (e.g., Intune, JAMF)</td>
+</tr>
+<tr>
+<td><code>user/ad_group</code> missing</td>
+<td>Requires LDAP/AD configuration in ISE connector</td>
+</tr>
+</tbody>
+</table>
+<h3 id="after-ise-upgrade-connector-fails">After ISE upgrade — connector
+fails</h3>
+<p>ISE upgrades regenerate pxGrid certificates. After upgrading ISE: 1.
+Delete the ISE connector in CSW 2. Export new ISE CA cert from upgraded
+ISE 3. Regenerate client CSR and get re-signed by CA 4. Recreate the ISE
+connector with updated certificates</p>
+<hr />
+<h2 id="related-resources">16. Related Resources</h2>
+<table>
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 52%" />
+</colgroup>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Secure-Firewall-Integration-Guide">CSW-Secure-Firewall-Integration-Guide</a></td>
+<td>NSEL flow ingestion from Cisco Secure Firewall (FTD/ASA) via
+FMC</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/csw-splunk-integration">csw-splunk-integration</a></td>
+<td>CSW syslog alert stream → Splunk SIEM</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Agent-Installation-Guide">CSW-Agent-Installation-Guide</a></td>
+<td>Deploy and configure CSW agents across Linux/Windows workloads</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Policy-Lifecycle">CSW-Policy-Lifecycle</a></td>
+<td>Policy discovery, review, approval, and enforcement workflow</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Compliance-Mapping">CSW-Compliance-Mapping</a></td>
+<td>Map CSW controls to NIST, PCI-DSS, HIPAA, CIS frameworks</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Operations-Toolkit">CSW-Operations-Toolkit</a></td>
+<td>Day-2 operations scripts: health checks, tenant reporting, policy
+analysis</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-User-Education">CSW-User-Education</a></td>
+<td>Onboarding materials and concept guides for new CSW users</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Suggested path for a new customer:</strong><br />
+CSW-User-Education → CSW-Agent-Installation-Guide → CSW-Policy-Lifecycle
+→ csw-ise-integration → csw-splunk-integration →
+CSW-Compliance-Mapping</p>
+</blockquote>
+<hr />
+<p><em>Community reference guide — Cisco Solutions Engineering. Not an
+official Cisco product document.</em><br />
+<em>For official documentation, see <a href="https://www.cisco.com/c/en/us/products/security/tetration/index.html">Cisco
+Secure Workload Documentation</a>.</em></p>
+</body>
+</html>
