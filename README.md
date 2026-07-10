@@ -1,10 +1,14 @@
-# Cisco Secure Workload — ISE / pxGrid Integration Guide
+# Cisco Secure Workload → ISE / pxGrid Integration Guide
 
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=chandrapati.csw-ise-integration&left_text=visitors)
 
-A step-by-step community reference guide for integrating **Cisco Secure Workload (CSW)** with **Cisco Identity Services Engine (ISE)** via **pxGrid 2.0** to enable user-identity–aware microsegmentation.
+A step-by-step integration guide for connecting **Cisco Secure Workload (CSW)** to **Cisco Identity Services Engine (ISE / ISE-PIC)** over **pxGrid 2.0** to enable **user-identity–aware microsegmentation**. ISE session, AD-group, **SGT**, and posture context become CSW **user labels** — so policy can follow the user, not just the IP.
 
-> **Disclaimer:** This is a reference guide prepared by Cisco Solutions Engineering. Always consult [official Cisco Secure Workload documentation](https://www.cisco.com/c/en/us/products/security/tetration/index.html) and [Cisco ISE documentation](https://www.cisco.com/c/en/us/support/security/identity-services-engine/series.html) for authoritative, release-specific guidance.
+[![Cisco Secure Workload](https://img.shields.io/badge/Cisco-Secure%20Workload-00205B?logo=cisco&logoColor=white)](https://www.cisco.com/go/secureworkload)
+[![Cisco ISE](https://img.shields.io/badge/Cisco-ISE%20%2F%20pxGrid%202.0-1BA0A2?logo=cisco&logoColor=white)](https://www.cisco.com/c/en/us/support/security/identity-services-engine/series.html)
+[![Integration](https://img.shields.io/badge/Integration-Identity%20Enrichment-007BC7)](https://www.cisco.com/c/m/en_us/products/security/secure-workload-compatibility-matrix.html)
+
+> **⚠ Disclaimer:** This is a **community reference guide** prepared by Cisco Solutions Engineering — not an official Cisco product document. Always refer to the [official Cisco Secure Workload documentation](https://www.cisco.com/c/en/us/support/security/tetration/series.html) and [Cisco ISE documentation](https://www.cisco.com/c/en/us/support/security/identity-services-engine/series.html) for authoritative, release-specific guidance.
 
 ---
 
@@ -18,26 +22,85 @@ A step-by-step community reference guide for integrating **Cisco Secure Workload
 
 ---
 
-## Contents
+## What This Covers
 
-| File | Description |
-|------|-------------|
-| [`CSW-ISE-Integration-Guide.md`](./CSW-ISE-Integration-Guide.md) | Full integration guide (Markdown source) |
-| [`CSW-ISE-Integration-Guide.html`](./CSW-ISE-Integration-Guide.html) | Standalone HTML version (embeds all styles) |
-| [`build.sh`](./build.sh) | Script to rebuild HTML from Markdown |
+| Area | Detail |
+|---|---|
+| **Integration type** | ISE connector — **identity/inventory enrichment** (runs on the CSW **Edge appliance**) |
+| **Mechanism** | **pxGrid 2.0** (WebSocket/REST): `getSessions` API + subscriptions to the **session** and **Security Group Label** topics |
+| **Data imported** | Session identity (username, AD group), **SGT**, endpoint & posture context — registered as ISE agents |
+| **Transport** | pxGrid over **TLS**, **TCP 8910** (mutual TLS; ISE pxGrid node needs a **SAN** certificate) |
+| **Refresh** | Endpoint/SGT **snapshot every 20 h**; **user labels every 2 min**; optional **LDAP snapshot every 24 h** |
+| **Enforcement** | **None** — this is identity **enrichment only**; no SGACL/policy is pushed back to ISE |
+| **Result** | `user/*` and `device/*` labels for identity-aware scopes and policies |
+| **Verified against** | CSW **3.7+** (SAN cert required); ISE **2.4+** or ISE-PIC **3.1+**; pxGrid **2.0** |
 
 ---
 
-## Quick Reference
+## Quick Start
 
-### Key requirements
-- ISE 2.4+ or ISE-PIC 3.1+
-- CSW 3.7+ (pxGrid SAN cert required)
-- pxGrid 2.0 (WebSocket/REST — pxGrid 1.0 / XMPP is end-of-life)
-- **CSW Edge appliance** (not Ingest — ISE connector runs on Edge)
-- TCP 8910 open: Edge appliance → ISE pxGrid node
+### Prerequisites
+- ISE **2.4+** or ISE-PIC **3.1+** with **pxGrid 2.0** enabled (pxGrid 1.0 / XMPP is end-of-life)
+- CSW **3.7+** — ISE pxGrid node certificate must include **Subject Alternative Names (SAN)**
+- A **pxGrid client certificate** for the CSW connector, signed by the **same CA** as the pxGrid node
+- CSW **Edge appliance** deployed and registered (ISE connector runs on Edge)
+- **TCP 8910** open: Edge appliance → ISE pxGrid node
+- (Optional) LDAP/AD reachable for additional `user/*` attribute enrichment
 
-### What CSW enriches from ISE
+### Steps (summary)
+
+**On Cisco ISE:**
+1. Enable **pxGrid** and confirm the pxGrid node **SAN certificate** (Administration → System → Certificates)
+2. Generate the CSW **pxGrid client** CSR (OpenSSL), have your **CA sign** it, export the signed PEM chain
+
+**On Cisco Secure Workload:**
+1. `Manage → Virtual Appliances` → select the **Edge appliance**
+2. **Connectors** → **+ Add Connector** → **ISE**; add ISE instance(s) with hostname/nodename + pxGrid certs
+3. Create an **Agent Remote VRF Configuration** covering the endpoint subnet(s)
+4. (Optional) add **LDAP** config → **Test and Apply**; approve the pxGrid client in ISE if prompted
+
+**Verify:**
+1. Connector shows **Status: Active**; endpoints register as **ISE agents**
+2. `Inventory → Workloads` — search an endpoint IP and confirm `user/*` / `device/*` labels
+3. Build an identity-aware scope, e.g. `user/ad_group = Finance-Analysts`
+
+See the [full step-by-step guide](CSW-ISE-Integration-Guide.md) or [open the HTML version](CSW-ISE-Integration-Guide.html) for detailed instructions.
+
+---
+
+## Video References
+
+> **Legend:** 🎬 video · 📘 guide · 📄 doc
+
+| Reference | What it shows |
+|---|---|
+| [🎬 CSW User Education video library](https://github.com/chandrapati/CSW-User-Education) | Curated Secure Workload concept explainers and walkthroughs |
+| [📘 ISE / pxGrid Integration Guide](CSW-ISE-Integration-Guide.md) | This repo's full step-by-step deployment guide |
+| [📄 Cisco docs — ISE Connector](https://www.cisco.com/c/en/us/td/docs/security/workload_security/secure_workload/user-guide/4_0/cisco-secure-workload-user-guide-on-prem-v40/configure-and-manage-connectors-for-secure-workload.html) | Authoritative connector behavior, pxGrid, certs, and limits |
+
+---
+
+## Architecture Diagram
+
+![CSW and Cisco ISE / pxGrid Integration Architecture](csw-ise-architecture.png)
+
+*The ISE connector on the CSW Edge appliance subscribes to ISE over pxGrid 2.0 (TLS, TCP 8910), pulling session identity, AD group, SGT, and posture context, and publishes them as `user/*` and `device/*` labels for identity-aware scopes and policies.*
+
+---
+
+## Files in This Repo
+
+| File | Description |
+|---|---|
+| [`README.md`](README.md) | This file — quick start and overview |
+| [`CSW-ISE-Integration-Guide.md`](CSW-ISE-Integration-Guide.md) | Full step-by-step guide (Markdown source) |
+| [`CSW-ISE-Integration-Guide.html`](CSW-ISE-Integration-Guide.html) | Styled HTML — open in browser for best experience |
+| [`csw-ise-architecture.png`](csw-ise-architecture.png) | Architecture diagram |
+| [`build.sh`](build.sh) | Regenerate HTML from Markdown (requires pandoc) |
+
+---
+
+## Enriched Labels — Quick Reference
 
 ```
 IP: 10.20.30.41
@@ -48,7 +111,6 @@ IP: 10.20.30.41
   device/mdm_compliance = Compliant
 ```
 
-### Limits
 | Metric | Limit |
 |--------|-------|
 | ISE instances per connector | 20 |
@@ -56,24 +118,7 @@ IP: 10.20.30.41
 | ISE connectors per tenant | 1 |
 | Max ISE endpoints per connector | 400,000 |
 
----
-
-## Guide Sections
-
-1. Overview & what you get
-2. Architecture diagram
-3. ISE attributes ingested by CSW
-4. Use cases (identity-aware policy, posture enforcement, SGT-based policy, lateral movement detection)
-5. Prerequisites checklist
-6. **Step A** — Enable pxGrid on ISE, verify SAN cert
-7. **Step B** — Generate pxGrid client certificate (OpenSSL CSR → CA sign → PEM)
-8. **Step C** — Configure ISE connector on CSW Edge appliance
-9. Optional LDAP/AD user attribute enrichment
-10. Scope and policy examples
-11. Verification steps
-12. Periodic tasks and data refresh timing
-13. Limits
-14. Troubleshooting
+> **Important:** CSW **consumes** ISE identity/SGT for labels — it does **not** push policy or SGACLs back to ISE. When an endpoint disconnects in ISE, its enrichment is removed from CSW on the next update.
 
 ---
 
